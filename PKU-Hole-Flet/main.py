@@ -54,8 +54,6 @@ def main(page: ft.Page):
         )
         page.views[-1].floating_action_button = fab
         
-        # res = {'data' : {'score' : {'jbxx': {'xm':'hahaha'},'cjxx' : [{'ywmc' : 'test1','skjsxm' : 'teacher','xqcj' : '95','jd' : '3.94'},{'ywmc' : 'test2','skjsxm' : 'teacher','xqcj' : '85','jd' : '3.84'},{'ywmc' : 'test3','skjsxm' : 'teacher','xqcj' : '75','jd' : '3.74'},{'ywmc' : 'test4','skjsxm' : 'teacher','xqcj' : '65','jd' : '3.54'},{'ywmc' : 'test5','skjsxm' : 'teacher','xqcj' : '55','jd' : '3.24'},{'ywmc' : 'test6','skjsxm' : 'teacher','xqcj' : '45','jd' : '2.54'},{'ywmc' : 'test7','skjsxm' : 'teacher','xqcj' : '35','jd' : '2.04'},{'ywmc' : 'test8','skjsxm' : 'teacher','xqcj' : '25','jd' : '1.24'},],'gpa': {'gpa':'3.930'}}}}
-        
         def cal_color(n,limit,pf=0):
             if pf==1:
                 return '#00FF00'
@@ -74,13 +72,9 @@ def main(page: ft.Page):
         def load(row,cj,jd,flag):
             pf = 0
             if cj=='合格':
-                score = 100
-                gpa = 100
-                pf = 1
+                score,gpa,pf = (100,100,1)
             elif cj=='不合格':
-                score = 100
-                gpa = 100
-                pf = -1
+                score,gpa,pf = (100,100,-1)
             else:
                 score = int(cj)
                 gpa = float(jd)/4*100
@@ -112,7 +106,7 @@ def main(page: ft.Page):
             )
             page.views[-1].controls.append(head)
             score = float(res['data']['score']['gpa']['gpa'])/4*100
-            main = ft.Row([pb,],alignment='center')
+            main = ft.Row([pb,])
             page.views[-1].controls.append(main)
             for s in range(0,101):
                 pb.value = score/10000*s
@@ -134,7 +128,7 @@ def main(page: ft.Page):
                     ft.Text('Teacher: '+teacher,size=18),
                 ]
             )
-            main = ft.Row([pb,],alignment='center')
+            main = ft.Row([pb,])
             page.views[-1].controls.append(head)
             page.views[-1].controls.append(main)
             page.update()
@@ -146,11 +140,7 @@ def main(page: ft.Page):
         page.set_clipboard(src)
         for url in re.findall('https{0,1}[//:a-zA-Z/.%&=0-9-?+_]*',src):
             os.system('start '+url)
-        hole_list = ft.ListView(
-            expand=1,
-            spacing=10,
-            padding=20,
-        )
+        hole_list = ft.ListView(expand=1,spacing=10,padding=20)
         flag=0
         for j in re.findall('\d{7}',src):
             g_loading.visible = True
@@ -196,6 +186,7 @@ def main(page: ft.Page):
             page.client_storage.remove('password')
             close_reply_dlg(e)
             page.go('/login')
+        
         dlg_warning = ft.AlertDialog(
             modal = True,
             title=ft.Text('Are You sure to Log out?'),
@@ -212,7 +203,7 @@ def main(page: ft.Page):
         page.update()
     
     def restore(e):
-        def close_reply_dlg():
+        def close_reply_dlg(e):
             dlg_warning.open =False
             page.update()
         
@@ -222,8 +213,9 @@ def main(page: ft.Page):
             login_status = 0
             page.snack_bar = ft.SnackBar(ft.Text('Default Settings Restored,Please Login'))
             page.snack_bar.open=True
-            close_reply_dlg()
+            close_reply_dlg(e)
             ini()
+        
         dlg_warning = ft.AlertDialog(
             modal = True,
             title=ft.Text('Are You sure to Restore Default Settings?'),
@@ -251,6 +243,7 @@ def main(page: ft.Page):
             page.snack_bar.open=True
             close_reply_dlg(e)
             route_change(page.route)
+        
         reply_text = ft.TextField(label='Content',hint_text='Only Text is Supported',multiline=True)
         dlg_reply = ft.AlertDialog(
             modal = True,
@@ -279,9 +272,11 @@ def main(page: ft.Page):
                 route_change(page.route)
             else:
                 page.go('/locate')
+        
         def close_reply_dlg(e):
             dlg_reply.open =False
             page.update()
+        
         search_text = ft.TextField(label='Search',hint_text='Only Text is Supported',multiline=True)
         dlg_reply = ft.AlertDialog(
             modal = True,
@@ -311,7 +306,6 @@ def main(page: ft.Page):
             content=ft.Column(
                 [ft.Image(src_base64=src)],
                 scroll='auto',
-                # width = 800,
             ),
             actions=[
                 ft.TextButton('Close',on_click=close_image_dlg)
@@ -532,11 +526,8 @@ def main(page: ft.Page):
     def route_change(route):
         if page.route == '/detail':
             return
-        hole_list = ft.ListView(
-            expand=1,
-            spacing=10,
-            padding=20,
-        )
+        
+        hole_list = ft.ListView(expand=1,spacing=10,padding=20)
         
         @retry(stop_max_attempt_number=5,wait_random_min=3,wait_random_max=5)
         def main_hole(flag=0):
@@ -701,8 +692,8 @@ def main(page: ft.Page):
                         barbar,
                     ],
                     vertical_alignment='center',
-                    horizontal_alignment='center',
                     scroll='auto',
+                    padding=ft.padding.only(left=100)
                 )
             )
             get_bar()
@@ -885,13 +876,12 @@ def main(page: ft.Page):
 
     page.title = 'HHHHHHH'
     page.on_resize = page_resize
-
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     
     page.scroll = "auto"
-    page.window_min_height = 500
-    page.window_min_width = 700
+    page.window_min_height = 550
+    page.window_min_width = 1050
     page.go(page.route)
     # page.go('/score')
 
