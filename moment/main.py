@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 import sys
 
-path = os.path.dirname(os.path.realpath(sys.argv[0]))+'\HeadPhoto'
+path = os.path.dirname(os.path.realpath(sys.argv[0]))+'/HeadPhoto'
 if not os.path.exists(path):
     os.mkdir(path)
 
@@ -19,7 +19,7 @@ def main(page: ft.Page):
     page.title = '朋友圈集赞截图生成'
     
     def generate(file_path,wanted,mode,pb,tip):
-        color = {'dark': (33,33,33),'light': (247,247,247)}
+        color = {'dark': (32,32,32),'light': (247,247,247)}
         def add_rectangle(needed):
             global x,y,w,h
             img =cv2.imread(file_path)
@@ -28,6 +28,7 @@ def main(page: ft.Page):
             for contour in contours:
                 xx,yy,ww,hh = cv2.boundingRect(contour)
                 tmp = 9999
+                
                 if ww>900 and xx:
                     # rectangle = cv2.rectangle(img,(xx,yy),(xx+ww,yy+hh),(0,255,0),3)
                     if yy<tmp:
@@ -50,7 +51,7 @@ def main(page: ft.Page):
                     rectangle = np.vstack((rectangle,addition))
                 rectangle = np.vstack((rectangle,addition[:(((y+40+(100)*(needed))-2100)%100),:,]))
                 rectangle = np.vstack((rectangle,bottom))
-            cv2.imwrite(os.path.dirname(os.path.realpath(sys.argv[0]))+'\out.jpg',rectangle)
+            cv2.imwrite(os.path.dirname(os.path.realpath(sys.argv[0]))+'/out.jpg',rectangle)
 
         def add_alpha_channel(img):
             b,g,r = cv2.split(img)
@@ -58,7 +59,7 @@ def main(page: ft.Page):
             return cv2.merge((b,g,r,alpha))
 
         def add_photo(photo,cnt):
-            img =cv2.imread(os.path.dirname(os.path.realpath(sys.argv[0]))+'\out.jpg')
+            img =cv2.imread(os.path.dirname(os.path.realpath(sys.argv[0]))+'/out.jpg')
             img = add_alpha_channel(img)
             inn = cv2.resize(photo, (85,85), interpolation= cv2.INTER_LINEAR)
             # img[y+30:y+120,x+200:x+290]=inn
@@ -71,7 +72,7 @@ def main(page: ft.Page):
             trans = [2,1,0,3]
             for c in range(3):
                 img[y1:y2,x1:x2,c] = (alpha_jpg*img[y1:y2,x1:x2,c])+(alpha_png*inn[:,:,trans[c]])
-            cv2.imwrite(os.path.dirname(os.path.realpath(sys.argv[0]))+'\out.jpg',img)
+            cv2.imwrite(os.path.dirname(os.path.realpath(sys.argv[0]))+'/out.jpg',img)
 
         def circle_corner(img, radii):
             circle = Image.new('L', (radii * 2, radii * 2), 0)  # 创建黑色方形
@@ -94,7 +95,7 @@ def main(page: ft.Page):
         
         add_rectangle(ceil(wanted/9))
         radii = 35  # 圆角大小
-        file = os.path.dirname(os.path.realpath(sys.argv[0]))+'\HeadPhoto'
+        file = os.path.dirname(os.path.realpath(sys.argv[0]))+'/HeadPhoto'
         cnt = 0
         for root, dirs, files in os.walk(file):
             for file in files:
@@ -150,7 +151,7 @@ def main(page: ft.Page):
             pics = re.findall('<a href="//(.*?)" class="swipebox">', html2)
             for picc in pics:
                 cnt+=1
-                sleep(1)
+                sleep(0.1)
                 file_name = picc.split('/')[-1]
                 response = requests.get(url='http://'+picc, headers=headers)
                 # 以二进制形式存储
@@ -326,7 +327,7 @@ def main(page: ft.Page):
                 ft.View(
                     '/finish',
                     [
-                        ft.Column([ft.Image(src='\out.jpg',height=page.window_height-130)],scroll='auto'),
+                        ft.Column([ft.Image(src='/out.jpg',height=page.window_height-130)],scroll='auto'),
                         ft.FilledButton('Done!',on_click=finish,width=200)
                     ],
                     horizontal_alignment='center',
